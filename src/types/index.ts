@@ -1,6 +1,6 @@
 export interface ItemData {
-    id: string;
-    relation?: string;
+    UID: string;
+    rel?: string;
     [key: string]: any;
     children?: ItemData[];
 }
