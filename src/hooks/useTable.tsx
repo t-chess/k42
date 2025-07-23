@@ -14,7 +14,7 @@ const transformData = (raw: any[]): ItemData[] => {
                 }
             }
         }
-        return { id: data.ID || data.id, data, rel, children }
+        return { id: data.ID || data.id, data, rel, children: childItems }
     }
     return raw.map(r => parseItem(r));
 };
@@ -23,10 +23,9 @@ const initData: ItemData[] = transformData(example);
 type TableState = {
     data: ItemData[];
     expanded: string[];
-    dispatch?: React.Dispatch<Action>;
 };
 
-const TableContext = createContext<TableState | undefined>(undefined);
+const TableContext = createContext<(TableState & { dispatch: React.Dispatch<Action> }) | undefined>(undefined);
 
 export const TableProvider = ({ children }: { children: ReactNode }) => {
     const reducer = (state: TableState, action: Action): TableState => {
@@ -43,4 +42,8 @@ export const TableProvider = ({ children }: { children: ReactNode }) => {
 
     return <TableContext.Provider value={{ ...state, dispatch }}> {children} </TableContext.Provider>;
 }
-export const useTable = () => useContext(TableContext);
+export const useTable = () => {
+    const ctx = useContext(TableContext);
+    if (!ctx) throw new Error('(!ctx)');
+    return ctx;
+};
